@@ -24,9 +24,56 @@ const DragDropTable = () => {
     const [columns, setColumns] = useState(initialColumns);
     const [tableData, setTableData] = useState(initialData);
     const [newRow, setNewRow] = useState({});
-    const [showAddRow, setShowAddRow] = useState(false);   //
+    const [showAddRowForms, setShowAddRowForms] = useState(false);   //
     const [newColumn, setNewColumn] = useState('');
     const [showColumnInputs, setShowColumnInputs] = useState(false);
+
+    //чекбокс
+
+    const handleCheckboxChange = (event) => {
+        const columnName = event.target.name;
+        if (event.target.checked) {
+            setColumns([...columns, columnName])
+        } else {
+            setColumns(columns.filter((col) => col !== columnName))
+        }
+    }
+
+    const handleNewColumnChange = (event) => {
+        setNewColumn(event.target.value);
+    }
+
+    const handleAddColumn = () => {
+        if (newColumn.trim() !== '') {
+            setColumns([...columns, newColumn])
+            setNewColumn('')
+        }
+    }
+
+    //строки
+
+    const handleNewRowChange = (event) => {
+        setNewRow({...newRow, [event.target.name]: event.target.value});
+    }
+
+    const handleAddRow = () => {
+        setTableData([...tableData, {...newRow, editable: false}]);
+        setNewRow({});
+        setShowAddRowForms(false)
+    }
+
+    const handleEditRow = (index, col, value) => {
+        const newData = [...tableData];
+        newData[index][col] = value;
+        setTableData(newData);
+    }
+
+    //перетаскивание строк (замена строк местами)
+
+    const handleMoveRow = (fromIndex, toIndex) => {
+        const newData = [...tableData];
+        newData.splice(toIndex, 0, newData.splice(fromIndex, 1)[0])
+    }
 
     return (
         <>
@@ -58,8 +105,8 @@ const DragDropTable = () => {
 
 
                 <div>
-                {/*add Row*/}
-                <Button>Add Row</Button>
+                    {/*add Row*/}
+                    <Button>Add Row</Button>
 
                     <TextField
                         label="New Row"
