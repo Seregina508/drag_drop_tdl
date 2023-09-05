@@ -169,7 +169,7 @@ const DragDropTable = () => {
     const [tableData, setTableData] = useState(initialData);
     const [newRow, setNewRow] = useState({});
     const [showAddRowForm, setShowAddRowForm] = useState(false);
-    const [newColumn, setNewCollumn] = useState('');
+    const [newColumn, setNewColumn] = useState('');
     const [showColumnInput, setShowColumnInput] = useState(false);
 
     // checkbox
@@ -184,13 +184,13 @@ const DragDropTable = () => {
     }
 
     const handleNewColumnChange = (event) => {
-        setNewCollumn(event.target.value)
+        setNewColumn(event.target.value)
     }
 
     const handleAddColumn = () => {
         if (newColumn.trim() !== '') {
             setColumns([...columns, newColumn])
-            setNewCollumn('');
+            setNewColumn('');
         }
     }
 
@@ -217,6 +217,26 @@ const DragDropTable = () => {
     const handleMoveRow = (fromIndex, toIndex) => {
         const newData = [...tableData];
         newData.splice(toIndex, 0, newData.splice(fromIndex, 1)[0])
+        setTableData(newData)
+    }
+
+    // const handleToggleEditRow = (index) => {
+    //     const newData = [...tableData];
+    //     newData[index].editable = !newData[index].editable;
+    //     setTableData(newData)
+    // }
+
+    const handleToggleEditRow = (index) => {
+        if (tableData[index].editable) {
+            const newData = [...tableData];
+            newData[index].editable = false;
+            setTableData(newData)
+        } else {
+            const newData = tableData.map((row, i) =>
+                i === index ? {...row, editable: true} : row
+            );
+            setTableData(newData)
+        }
     }
 
 
@@ -295,6 +315,7 @@ const DragDropTable = () => {
                                 columns={columns}
                                 handleEditRow={handleEditRow}
                                 handleMoveRow={handleMoveRow}
+                                handleToggleEditRow={handleToggleEditRow}
                             />
                         ))}
                     </TableBody>
