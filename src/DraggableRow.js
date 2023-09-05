@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useDrag, useDrop} from "react-dnd";
 import {Button, IconButton, TableCell, TableRow, TextField} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
@@ -22,17 +22,37 @@ const DraggableRow = ({row, index, handleEditRow, handleMoveRow, columns, handle
         }
     })
 
-    const handleToggleEdit = () => {
+    // const handleToggleEdit = () => { //останется без изменений
+    //     handleToggleEditRow(index)
+    // }
+
+    // const handleSaveRow = () => {      // нужно изменить
+    //     handleToggleEditRow(index)
+    // }
+    //
+    // const handleCancelEdit = () => {         //?????????????????????????????
+    //     handleToggleEditRow(index)
+    //     handleMoveRow(index, null, row[columns[index]])
+    // }
+
+
+    const [cellStates, setCellStates] = useState(columns.reduce((acc, col) => ({...acc, [col]: row[col]}), {}));
+
+    const handleToggleEdit = () => {       //останется без изменений
         handleToggleEditRow(index)
     }
 
     const handleSaveRow = () => {
+
+        Object.entries(cellStates).forEach(([col, value]) => {
+            handleEditRow(index, col, value);
+        });
         handleToggleEditRow(index)
     }
 
     const handleCancelEdit = () => {
-        handleToggleEditRow(index)
-        handleMoveRow(index, null, row[columns[index]])
+        setCellStates(columns.reduce((acc, col) => ({...acc, [col]: row[col]}), {}))
+        handleToggleEditRow(index);
     }
 
     return (
@@ -42,8 +62,8 @@ const DraggableRow = ({row, index, handleEditRow, handleMoveRow, columns, handle
 
                     {row.editable ? (
                         <TextField
-                            value={row[col]}
-                            onChange={(e) => handleEditRow(index, col, e.target.value)}
+                            value={cellStates[col]}
+                            onChange={(e) => setCellStates({...cellStates, [col]: e.target.value})}
                         />
                     ) : (
                         row[col]
